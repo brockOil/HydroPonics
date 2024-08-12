@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ESP32 Sensor Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Include Chart.js -->
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>ESP32 Sensor Dashboard</h1>
+      <button id="connectBtn">Connect</button>
+      <div id="connectionStatus">Disconnected</div>
+    </header>
+    <section id="sensorReadings">
+      <h2>Sensor Readings</h2>
+      <div class="sensor-value" id="phValue">pH Value: -</div>
+      <div class="sensor-value" id="ecValue">EC Value: -</div>
+    </section>
+    <section id="sensorGraph">
+      <h2>Live Graph</h2>
+      <canvas id="sensorChart"></canvas> 
+    </section>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

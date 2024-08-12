@@ -1,0 +1,30 @@
+/* styles.css */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  header h1 {
+    margin: 0;
+  }
+  
+  #connectionStatus {
+    color: red;
+  }
+  
+  .sensor-value {
+    margin: 10px 0;
+    font-size: 18px;
+  }
+  
+  #sensorGraph {
+    margin-top: 20px;
+  }
+  
