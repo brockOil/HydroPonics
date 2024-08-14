@@ -1,29 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ESP32 Sensor Dashboard</title>
-  <link rel="stylesheet" href="styles.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Include Chart.js -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hydroponics Monitor</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>ESP32 Sensor Dashboard</h1>
-      <button id="connectBtn">Connect</button>
-      <div id="connectionStatus">Disconnected</div>
-    </header>
-    <section id="sensorReadings">
-      <h2>Sensor Readings</h2>
-      <div class="sensor-value" id="phValue">pH Value: -</div>
-      <div class="sensor-value" id="ecValue">EC Value: -</div>
-    </section>
-    <section id="sensorGraph">
-      <h2>Live Graph</h2>
-      <canvas id="sensorChart"></canvas> 
-    </section>
-  </div>
-  <script src="script.js"></script>
+    <div class="container">
+        <header>
+            <h1>Hydroponics Monitor</h1>
+        </header>
+        <div class="content">
+            <div class="levels">
+                <div class="level-card">
+                    <h2>EC Level</h2>
+                    <p id="ec-level">-- mS/cm</p>
+                </div>
+                <div class="level-card">
+                    <h2>pH Level</h2>
+                    <p id="ph-level">--</p>
+                </div>
+            </div>
+            <div class="graph">
+                <canvas id="liveGraph"></canvas>
+            </div>
+            <div class="actions">
+                <button id="downloadBtn" class="button">Download Data</button>
+            </div>
+        </div>
+        <footer>
+            <p>&copy; 2024 Hydroponics Monitor. All rights reserved.</p>
+        </footer>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>

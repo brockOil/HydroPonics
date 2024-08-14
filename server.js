@@ -1,28 +1,62 @@
-const WebSocket = require('ws');
+const express = require('express');
+const fs = require('fs');
+const path = require('path');
+const app = express();
+const port = 3000;
 
-const wss = new WebSocket.Server({ port: 8080 }); // WebSocket server will listen on port 8080
+app.use(express.json());
+app.use(express.static('public'));
 
-wss.on('connection', function connection(ws) {
-  console.log('Client connected');
+// Data storage file
+const dataFile = path.join(__dirname, 'data', 'hydroponics_data.json');
 
-  // Example: Send mock data every 5 seconds
-  const sendMockData = setInterval(() => {
-    if (ws.readyState === WebSocket.OPEN) { // Check if the connection is still open
-      const ph = getRandomFloat(4, 10); // Replace with actual data from your sensors
-      const ec = getRandomFloat(200, 2000); // Replace with actual data from your sensors
-      const data = { ph, ec };
-      ws.send(JSON.stringify(data));
+// Endpoint to receive data
+app.post('/api/data', (req, res) => {
+    const data = req.body;
+    if (data && Array.isArray(data)) {
+        fs.readFile(dataFile, 'utf8', (err, fileData) => {
+            if (err) return res.status(500).send('Error reading data file.');
+
+            let existingData = [];
+            try {
+                existingData = JSON.parse(fileData);
+            } catch (e) {
+                // No previous data or malformed JSON
+            }
+
+            existingData.push(...data);
+
+            fs.writeFile(dataFile, JSON.stringify(existingData, null, 2), (err) => {
+                if (err) return res.status(500).send('Error writing data file.');
+                res.status(200).send('Data saved successfully.');
+            });
+        });
     } else {
-      clearInterval(sendMockData); // Stop the interval if the connection is closed
+        res.status(400).send('Invalid data format.');
     }
-  }, 5000); // Send data every 5 seconds
-
-  ws.on('close', function close() {
-    console.log('Client disconnected');
-    clearInterval(sendMockData); // Stop sending data when client disconnects
-  });
 });
 
-function getRandomFloat(min, max) {
-  return Math.random() * (max - min) + min;
-}
+// Endpoint to download CSV
+app.get('/api/download', (req, res) => {
+    fs.readFile(dataFile, 'utf8', (err, fileData) => {
+        if (err) return res.status(500).send('Error reading data file.');
+
+        let existingData = [];
+        try {
+            existingData = JSON.parse(fileData);
+        } catch (e) {
+            return res.status(500).send('Error parsing data.');
+        }
+
+        let csvContent = "Time,EC Level (mS/cm),pH Level\n";
+        csvContent += existingData.map(d => `${d.time},${d.ecLevel},${d.phLevel}`).join("\n");
+
+        res.setHeader('Content-disposition', 'attachment; filename=hydroponics_data.csv');
+        res.set('Content-Type', 'text/csv');
+        res.send(csvContent);
+    });
+});
+
+app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
+});

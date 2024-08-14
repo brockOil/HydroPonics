@@ -1,65 +1,151 @@
+/* styles.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap');
+
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
+    font-family: 'Poppins', sans-serif;
+    background: #141e30; /* Dark gradient background */
+    background: linear-gradient(to right, #141e30, #243b55); /* Gradient effect */
+    color: #fff;
     margin: 0;
     padding: 0;
-  }
-  
-  .container {
-    max-width: 800px;
-    margin: 20px auto;
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-  }
-  
-  header {
     display: flex;
+    justify-content: center;
     align-items: center;
-    justify-content: space-between;
-  }
-  
-  h1 {
-    font-size: 24px;
-    color: #333;
-  }
-  
-  button {
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #0056b3;
-  }
-  
-  #connectionStatus {
-    font-size: 14px;
-  }
-  
-  #sensorReadings, #sensorGraph {
-    margin-top: 20px;
-  }
-  
-  .sensor-value {
-    font-size: 18px;
-    margin-bottom: 10px;
-  }
-  
-  #sensorChart {
-    width: 100%;
-    max-width: 600px;
-    margin-top: 10px;
-  }
+    height: 100vh;
+    overflow: hidden;
+}
 
-  #sensorChart {
-    background-image: url('crop-irrigation .jpg'); 
-    background-size: cover; 
-    background-position: center; 
-  }
+.container {
+    background: #fff;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 1200px;
+    animation: fadeIn 1s ease-in-out;
+    color: #333;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+h1 {
+    font-weight: 700;
+    font-size: 2.5em;
+    color: #243b55;
+    animation: slideInFromLeft 1s ease-in-out;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.levels {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.level-card {
+    background: linear-gradient(135deg, #67b26f, #4ca2cd); /* Colorful gradient */
+    padding: 30px;
+    border-radius: 15px;
+    width: 45%;
+    text-align: center;
+    transition: transform 0.3s ease-in-out, background 0.3s ease-in-out;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    animation: popIn 1s ease-in-out;
+    color: #fff;
+}
+
+.level-card:hover {
+    transform: scale(1.05);
+    background: linear-gradient(135deg, #4ca2cd, #67b26f);
+}
+
+.level-card h2 {
+    margin: 0 0 10px;
+    font-weight: 400;
+    color: #fff;
+}
+
+.graph {
+    background: linear-gradient(135deg, #ffb347, #ffcc33); /* Colorful gradient */
+    padding: 30px;
+    border-radius: 15px;
+    width: 100%;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    animation: popIn 1.5s ease-in-out;
+    color: #fff;
+}
+
+canvas {
+    width: 100% !important;
+    height: 400px !important;
+}
+
+.actions {
+    text-align: center;
+}
+
+.button {
+    background: #ff4e50;
+    border: none;
+    padding: 15px 30px;
+    color: white;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out, transform 0.3s ease-in-out;
+    font-size: 1em;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    animation: popIn 2s ease-in-out;
+}
+
+.button:hover {
+    background: #e34d4e;
+    transform: scale(1.05);
+}
+
+footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.8em;
+    color: #999;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideInFromLeft {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes popIn {
+    from {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}

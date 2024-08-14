@@ -1,121 +1,117 @@
-const { JSDOM } = require('jsdom');
-const { document } = (new JSDOM('')).window;
-global.document = document;
-
-// Now you can use `document` as if you were in a browser
-// Place your script here or require a script file that uses `document`
-document.addEventListener('DOMContentLoaded', function() {
-    const connectBtn = document.getElementById('connectBtn');
-    const connectionStatus = document.getElementById('connectionStatus');
-    const phValueElem = document.getElementById('phValue');
-    const ecValueElem = document.getElementById('ecValue');
-    const sensorChartCtx = document.getElementById('sensorChart').getContext('2d');
-    
-    let sensorChart;
-  
-    connectBtn.addEventListener('click', function() {
-      if (connectBtn.textContent === 'Connect') {
-        connectBtn.textContent = 'Disconnect';
-        connectToWebSocket();
-      } else {
-        connectBtn.textContent = 'Connect';
-        disconnectWebSocket();
-      }
-    });
-  
-    function connectToWebSocket() {
-      // Replace with your WebSocket server URL
-      const ws = new WebSocket('ws://localhost:8080');
-      
-      ws.onopen = function() {
-        console.log('WebSocket connected');
-        connectionStatus.textContent = 'Connected';
-      };
-      
-      ws.onmessage = function(event) {
-        const data = JSON.parse(event.data);
-        updateSensorValues(data.ph, data.ec);
-        updateSensorChart(data.ph, data.ec);
-      };
-      
-      ws.onclose = function() {
-        console.log('WebSocket closed');
-        connectionStatus.textContent = 'Disconnected';
-        if (connectBtn.textContent === 'Disconnect') {
-          connectBtn.textContent = 'Connect';
-        }
-      };
-    }
-  
-    function disconnectWebSocket() {
-      // Disconnect WebSocket
-      // Implement this based on your WebSocket implementation
-    }
-  
-    function updateSensorValues(ph, ec) {
-      phValueElem.textContent = `pH Value: ${ph.toFixed(2)}`;
-      ecValueElem.textContent = `EC Value: ${ec.toFixed(2)} µS/cm`;
-    }
-  
-    function updateSensorChart(ph, ec) {
-      if (!sensorChart) {
-        sensorChart = new Chart(sensorChartCtx, {
-          type: 'line',
-          data: {
+// script.js
+document.addEventListener('DOMContentLoaded', function () {
+    const ctx = document.getElementById('liveGraph').getContext('2d');
+    const liveGraph = new Chart(ctx, {
+        type: 'line',
+        data: {
             labels: [],
             datasets: [
-              {
-                label: 'pH',
-                data: [],
-                borderColor: '#007bff',
-                fill: false
-              },
-              {
-                label: 'EC (µS/cm)',
-                data: [],
-                borderColor: '#28a745',
-                fill: false
-              }
+                {
+                    label: 'EC Level (mS/cm)',
+                    borderColor: '#ff6384',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    data: [],
+                    fill: true,
+                },
+                {
+                    label: 'pH Level',
+                    borderColor: '#36a2eb',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    data: [],
+                    fill: true,
+                }
             ]
-          },
-          options: {
+        },
+        options: {
             responsive: true,
-            maintainAspectRatio: false,
             scales: {
-              xAxes: [{
-                display: true,
-                scaleLabel: {
-                  display: true,
-                  labelString: 'Time'
+                x: {
+                    display: true,
+                    title: {
+                        display: true,
+                        text: 'Time',
+                        color: '#fff',
+                    }
+                },
+                y: {
+                    display: true,
+                    title: {
+                        display: true,
+                        text: 'Level',
+                        color: '#fff',
+                    }
                 }
-              }],
-              yAxes: [{
-                display: true,
-                scaleLabel: {
-                  display: true,
-                  labelString: 'Value'
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#fff'
+                    }
                 }
-              }]
             }
-          }
-        });
-      }
-  
-      // Add data to the chart
-      const timestamp = new Date().toLocaleTimeString();
-      sensorChart.data.labels.push(timestamp);
-      sensorChart.data.datasets[0].data.push(ph);
-      sensorChart.data.datasets[1].data.push(ec);
-  
-      // Limit the number of data points shown (optional)
-      const maxDataPoints = 10;
-      if (sensorChart.data.labels.length > maxDataPoints) {
-        sensorChart.data.labels.shift();
-        sensorChart.data.datasets[0].data.shift();
-        sensorChart.data.datasets[1].data.shift();
-      }
-  
-      sensorChart.update();
+        }
+    });
+
+    // Initialize data arrays from local storage or empty arrays
+    const ecData = JSON.parse(localStorage.getItem('ecData')) || [];
+    const phData = JSON.parse(localStorage.getItem('phData')) || [];
+
+    // Populate graph with initial data
+    ecData.forEach((data) => {
+        liveGraph.data.labels.push(data.time);
+        liveGraph.data.datasets[0].data.push(data.level);
+    });
+    phData.forEach((data, i) => {
+        liveGraph.data.datasets[1].data.push(data.level);
+    });
+    liveGraph.update();
+
+    function updateData() {
+        const ecLevel = (Math.random() * 0.2 + 1.3).toFixed(2); // Example: EC level around 1.4 mS/cm
+        const phLevel = (Math.random() * 0.4 + 6.8).toFixed(2); // Example: pH level around 7
+        const currentTime = new Date().toLocaleTimeString();
+
+        document.getElementById('ec-level').textContent = `${ecLevel} mS/cm`;
+        document.getElementById('ph-level').textContent = phLevel;
+
+        liveGraph.data.labels.push(currentTime);
+        liveGraph.data.datasets[0].data.push(ecLevel);
+        liveGraph.data.datasets[1].data.push(phLevel);
+
+        ecData.push({ time: currentTime, level: ecLevel });
+        phData.push({ time: currentTime, level: phLevel });
+
+        liveGraph.update();
+
+        // Limit the number of data points displayed
+        if (liveGraph.data.labels.length > 20) {
+            liveGraph.data.labels.shift();
+            liveGraph.data.datasets[0].data.shift();
+            liveGraph.data.datasets[1].data.shift();
+            ecData.shift();
+            phData.shift();
+        }
+
+        // Update local storage
+        localStorage.setItem('ecData', JSON.stringify(ecData));
+        localStorage.setItem('phData', JSON.stringify(phData));
     }
-  });
-  
+
+    function downloadCSV() {
+        const csvContent = "data:text/csv;charset=utf-8," 
+            + "Time,EC Level (mS/cm),pH Level\n"
+            + ecData.map((e, i) => `${e.time},${e.level},${phData[i].level}`).join("\n");
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `hydroponics_data_${new Date().toISOString()}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    document.getElementById('downloadBtn').addEventListener('click', downloadCSV);
+
+    setInterval(updateData, 1000);
+});
